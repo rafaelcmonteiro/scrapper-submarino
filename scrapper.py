@@ -13,6 +13,10 @@ def next_page(num):
                 f'pagina-{num}?ordenacao=relevance')
 
 
+def returning_to_book_page():
+    browser.get('https://www.submarino.com.br/categoria/livros')
+
+
 def writing(name, data_set):
     for data in data_set:
         with open(f'{name}.txt', 'a') as f:
@@ -77,7 +81,8 @@ def get_categories():
 
         writing(category, sub_categories)
 
-        btn_click('/html/body/header/div[2]/div[3]/div/div/ul/li[5]/a')
+        # Returning to book page function
+        returning_to_book_page()
 
 
 def get_all_books():
@@ -87,16 +92,15 @@ def get_all_books():
     for index in range(2, 5):
         print(index)
 
-        #books = browser.find_elements_by_xpath('//h2[@class="TitleUI-bwhjk3-15 khKJTM TitleH2-sc-1wh9e1x-1 fINzxm"]')
+        # books = browser.find_elements_by_xpath('//h2[@class="TitleUI-bwhjk3-15 khKJTM TitleH2-sc-1wh9e1x-1 fINzxm"]')
         prices = browser.find_elements_by_xpath('//*[@id = "content-middle"]')
         # funcionou parcialmente = '//span[@id = "content-middle"]'
 
         total_items_collected = len(prices)
         for x in range(total_items_collected):
             if x < 24:
-
                 list_values.append(prices[x].text)
 
         next_page(index)
-        #browser.close()
+        # browser.close()
     writing('submarino_books', list_values)

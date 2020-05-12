@@ -1,3 +1,4 @@
+import csv
 import time
 
 from selenium import webdriver
@@ -18,9 +19,17 @@ def returning_to_book_page():
 
 
 def writing(name, data_set):
-    for data in data_set:
-        with open(f'{name}.txt', 'a') as f:
-            f.write(data + '\n')
+    if name == 'submarino_books':
+        csv_columns = ['title', 'price']
+        with open(f'{name}.csv', 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+            writer.writeheader()
+            for data in data_set:
+                writer.writerow(data)
+    else:
+        for data in data_set:
+            with open(f'{name}.txt', 'a') as f:
+                f.write(data + '\n')
 
 
 def get_dirty_categories():
@@ -89,18 +98,17 @@ def get_all_books():
     browser.get('https://www.submarino.com.br/categoria/livros/administracao-e-negocios/administracao?ordenacao'
                 '=relevance')
     list_values = []
-    for index in range(2, 5):
+    for index in range(2, 3):
         print(index)
+        books = browser.find_elements_by_xpath('//h2[@class="TitleUI-bwhjk3-15 khKJTM TitleH2-sc-1wh9e1x-1 fINzxm"]')
+        prices = browser.find_elements_by_xpath('//*[@class = "PriceWrapper-bwhjk3-13 eBwWGp ViewUI-sc-1ijittn-6 '
+                                                'iXIDWU"]')
 
-        # books = browser.find_elements_by_xpath('//h2[@class="TitleUI-bwhjk3-15 khKJTM TitleH2-sc-1wh9e1x-1 fINzxm"]')
-        prices = browser.find_elements_by_xpath('//*[@id = "content-middle"]')
         # funcionou parcialmente = '//span[@id = "content-middle"]'
-
-        total_items_collected = len(prices)
-        for x in range(total_items_collected):
-            if x < 24:
-                list_values.append(prices[x].text)
+        for x in range(len(books)):
+            list_values.append({'title': books[x].text, 'price': prices[x].text})
+        print(list_values)
+        writing('submarino_books', list_values)
 
         next_page(index)
         # browser.close()
-    writing('submarino_books', list_values)

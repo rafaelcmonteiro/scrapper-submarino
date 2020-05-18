@@ -19,17 +19,9 @@ def returning_to_book_page():
 
 
 def writing(name, data_set):
-    if name == 'submarino_books':
-        csv_columns = ['title', 'price']
-        with open(f'{name}.csv', 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
-            writer.writeheader()
-            for data in data_set:
-                writer.writerow(data)
-    else:
-        for data in data_set:
-            with open(f'{name}.txt', 'a') as f:
-                f.write(data + '\n')
+    for data in data_set:
+        with open(f'{name}.txt', 'a') as f:
+            f.write(data + '\n')
 
 
 def get_dirty_categories():
@@ -98,16 +90,18 @@ def get_all_books():
     browser.get('https://www.submarino.com.br/categoria/livros/administracao-e-negocios/administracao?ordenacao'
                 '=relevance')
     list_values = []
-    for index in range(2, 3):
+    for index in range(2, 22):
         print(index)
         books = browser.find_elements_by_xpath('//h2[@class="TitleUI-bwhjk3-15 khKJTM TitleH2-sc-1wh9e1x-1 fINzxm"]')
         prices = browser.find_elements_by_xpath('//*[@class = "PriceWrapper-bwhjk3-13 eBwWGp ViewUI-sc-1ijittn-6 '
                                                 'iXIDWU"]')
 
         # funcionou parcialmente = '//span[@id = "content-middle"]'
-        for x in range(len(books)):
-            list_values.append({'title': books[x].text, 'price': prices[x].text})
+        for x in range(len(books)-1):
+            string_books = f'{books[x].text};{prices[x].text}'
+            list_values.append(string_books)
         print(list_values)
+
         writing('submarino_books', list_values)
 
         next_page(index)

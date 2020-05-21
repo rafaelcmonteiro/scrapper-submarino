@@ -45,52 +45,17 @@ def get_categories():
     categories_and_sub = {}
 
     for index, category in enumerate(dirty_categories):
-        if 17 < index < 57:
+        if 0 <= index < 40:
             categories.append(category.text)
 
     writing('categories', categories)
-
-    for index, category in enumerate(categories):
-        # limitando o código.
-        if index == 2:
-            break
-
-        time.sleep(10.0)
-        category = unidecode(category)
-        category_value = category.lower().replace(' ', '-')
-
-        print(category_value)
-
-        btn_click(f'//a[@href="/categoria/livros/{category_value}?ordenacao=relevance"]')
-
-        time.sleep(10.0)
-        try:
-            btn_click('/html/body/div[1]/div/div/div/div[3]/div/div[2]/div['
-                      '2]/div/aside/div[1]/div[2]/div/div/div/span/div/div/section['
-                      '1]/div/button')
-        except:
-            print('Não existe.')
-
-        dirty_categories_again = get_dirty_categories()
-
-        sub_categories = []
-        for category_again in dirty_categories_again:
-            if category_again.text == 'vade mecum rideel':
-                break
-            else:
-                sub_categories.append(category_again.text)
-
-        writing(category, sub_categories)
-
-        # Returning to book page function
-        returning_to_book_page()
 
 
 def get_all_books():
     browser.get('https://www.submarino.com.br/categoria/livros/administracao-e-negocios/administracao?ordenacao'
                 '=relevance')
     list_values = []
-    for index in range(2, 22):
+    for index in range(2, 3):
         print(index)
         books = browser.find_elements_by_xpath('//h2[@class="TitleUI-bwhjk3-15 khKJTM TitleH2-sc-1wh9e1x-1 fINzxm"]')
         prices = browser.find_elements_by_xpath('//*[@class = "PriceWrapper-bwhjk3-13 eBwWGp ViewUI-sc-1ijittn-6 '
@@ -103,6 +68,6 @@ def get_all_books():
         print(list_values)
 
         writing('submarino_books', list_values)
-
+        list_values = []
         next_page(index)
         # browser.close()

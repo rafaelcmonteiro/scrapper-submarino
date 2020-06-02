@@ -1,16 +1,15 @@
 import csv
 import time
-
+import unidecode
 from selenium import webdriver
-from unidecode import unidecode
 
 browser = webdriver.Firefox()
 browser.get('https://www.submarino.com.br/categoria/livros')
 browser.implicitly_wait(10)
 
 
-def next_page(num):
-    browser.get('https://www.submarino.com.br/categoria/livros/administracao-e-negocios/administracao/'
+def next_page(category_name, num):
+    browser.get(f'https://www.submarino.com.br/categoria/livros/{category_name}/'
                 f'pagina-{num}?ordenacao=relevance')
 
 
@@ -51,12 +50,21 @@ def get_categories():
     writing('categories', categories)
 
 
-def get_all_books():
-    browser.get('https://www.submarino.com.br/categoria/livros/administracao-e-negocios/administracao?ordenacao'
-                '=relevance')
+def categories_administrator():
+    with open('categories.txt') as f:
+        values = unidecode.unidecode(f.read())
+
+    new_values = (values.replace(' ', '-').lower())
+    new_list = new_values.split("\n")
+    for value in new_list:
+        browser.get(f'https://www.submarino.com.br/categoria/livros/{value}?ordenacao='
+                    'relevance')
+        get_all_books(value)
+
+
+def get_all_books(category_name):
     list_values = []
     for index in range(2, 3):
-        print(index)
         books = browser.find_elements_by_xpath('//h2[@class="TitleUI-bwhjk3-15 khKJTM TitleH2-sc-1wh9e1x-1 fINzxm"]')
         prices = browser.find_elements_by_xpath('//*[@class = "PriceWrapper-bwhjk3-13 eBwWGp ViewUI-sc-1ijittn-6 '
                                                 'iXIDWU"]')
@@ -65,9 +73,9 @@ def get_all_books():
         for x in range(len(books)-1):
             string_books = f'{books[x].text};{prices[x].text}'
             list_values.append(string_books)
-        print(list_values)
 
         writing('submarino_books', list_values)
         list_values = []
-        next_page(index)
+        print(category_name)
+        next_page(category_name, index)
         # browser.close()
